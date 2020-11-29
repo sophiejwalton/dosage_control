@@ -10,9 +10,6 @@ from holoviews import opts
 import bokeh.io
 import bootcamp_utils.hv_defaults
 
-import panel as pn
-pn.extension()
-
 
 
 def make_gridplot(df_tidy, names, p1, p2, to_plot = 'concentration', logx = True,

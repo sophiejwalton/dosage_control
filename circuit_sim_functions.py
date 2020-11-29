@@ -19,8 +19,6 @@ import bokeh.io
 import holoviews as hv
 
 
-import panel as pn
-pn.extension()
 
 import IPython.display
 
@@ -778,9 +776,9 @@ def double_sensitivity_params(paper2_dvdt, default_params, names,param = 'N',
             
             gamma_sensitivities[k, 2:] = sensitivities[:, 0, -1]
           #  print(np.abs(sensitivities[1, 0, -100:10]))
-            print(p2,p1, np.var(sensitivities[1, 0, -10:]), np.var(sensitivities[1, 0, -10:]) > 1)
-            if np.var(sensitivities[1, 0, -10:]) > 1:
-                print('shit')
+          #  print(p2,p1, np.var(sensitivities[1, 0, -10:]), np.var(sensitivities[1, 0, -10:]) > 1)
+           # if np.var(sensitivities[1, 0, -10:]) > 1:
+              #  print('bad')
             
             N_sensitivities[k, 2:] = sensitivities[:, 1, -1]
             gamma_sensitivities[k, 0] = p1
