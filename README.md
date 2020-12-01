@@ -1,7 +1,7 @@
 # dosage_control
 
 Repository for Dosage Control project. Each circuit is contained in its own jupyter notebook and can be run to recreate plots. 
-
+The sandbox folder contains scratch work that was created during the development of this project. 
 
 To run notebooks, the packages listed in requirements.txt must be installed. The instructions for installation are adapted from (http://justinbois.github.io/bootcamp/2020/lessons/l00_configuring_your_computer.html). 
 
