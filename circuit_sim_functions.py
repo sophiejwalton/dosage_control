@@ -198,8 +198,14 @@ def double_param_search_ss3(param2, dvdt, state_inits, default_params, names,
         temp_params[param2] = p2
         for i, p1 in enumerate(param1s):
             temp_params[param1] = p1
+            
+            simdata = simulate(dv_dt, 
+                       temp_params, state_inits,
+                       t_max = tmax, n_times = n_times)
+            end_point = np.copy(simdata.solution[-1, :])
+            
 
-            soln = find_ss_opt(lambda params: (lambda x: dvdt(x, params)), temp_params, state_inits,
+            soln = find_ss_opt(lambda params: (lambda x: dvdt(x, params)), temp_params, end_points,
                               verbose = False)
             
             new_solutions[j, i,:] = soln 
@@ -379,6 +385,7 @@ def get_param_trajectories(system, state_inits, names, params,
     for i, par in enumerate(param_range):
         temp_params = copy.copy(params)
         temp_params[param] = par
+        
         sim = simulate(system, 
                    temp_params, state_inits, 
                    t_max = tmax, n_times =1000)
@@ -719,7 +726,7 @@ def plot_sensitivities(df_tidy, name = 'H', logx = True, plot_abs = False, param
     
     return plots
 
-def double_sensitivity_params(paper2_dvdt, default_params, names,param = 'N',
+def double_sensitivity_params(paper2_dvdt, default_params, names,param = 'N', state_inits = np.zeros(3),
                               param_N_range = np.logspace(-2, 1, 10), 
                               param_g_range = np.logspace(np.log10(.005), np.log10(.02), 10),
                               
@@ -750,14 +757,14 @@ def double_sensitivity_params(paper2_dvdt, default_params, names,param = 'N',
     
     def C2(K):
         gamma, N = K 
-     
-
-
-        def dC2dt(xs, t, gamma, N):
-        
-            return paper2_dvdt(xs, gamma, N, default_params)
-        sol = odeint(dC2dt, x0, tspan2, tuple((gamma, N)))
-        return sol
+        temp_params['gamma'] = gamma
+        temp_params['N'] = N
+        simdata = simulate(paper2_dvdt, 
+                       temp_params, state_inits,
+                       t_max = 1000, n_times = 10000)
+    
+        end_point = np.mean(simdata.solution[-100:, :], 0)
+        return end_point
     
     
     k = 0 
@@ -769,18 +776,21 @@ def double_sensitivity_params(paper2_dvdt, default_params, names,param = 'N',
         for i, p1 in enumerate(param_N_range):
             
             K2 = [p2, p1]
+            temp_params = copy.copy(default_params)
            # print(K2)
 
              
             sensitivities = nd.Jacobian(C2)(K2).T
+            #print(sensitivities[0, :])
             
-            gamma_sensitivities[k, 2:] = sensitivities[:, 0, -1]
+            gamma_sensitivities[k, 2:] = sensitivities[0, :]
+            
           #  print(np.abs(sensitivities[1, 0, -100:10]))
           #  print(p2,p1, np.var(sensitivities[1, 0, -10:]), np.var(sensitivities[1, 0, -10:]) > 1)
            # if np.var(sensitivities[1, 0, -10:]) > 1:
               #  print('bad')
             
-            N_sensitivities[k, 2:] = sensitivities[:, 1, -1]
+            N_sensitivities[k, 2:] = sensitivities[1, :]
             gamma_sensitivities[k, 0] = p1
             N_sensitivities[k, 0] = p1                               
             gamma_sensitivities[k, 1] = p2
@@ -801,7 +811,12 @@ def double_sensitivity_params(paper2_dvdt, default_params, names,param = 'N',
                   value_name = 'sensitivity',
                  var_name = 'species')
     df_tidy_N['sensitivity_to'] = 'N'
-    return pd.concat([df_tidy_N, df_tidy_g])   
+    return pd.concat([df_tidy_N, df_tidy_g]) 
+
+
+
+
+
 
 
 def time_to_ss(simdata, names, species = 'H', eps_ratio = .02, span = 100):
