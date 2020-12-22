@@ -3,7 +3,7 @@
 Repository for Dosage Control project. Each circuit is contained in its own jupyter notebook and can be run to recreate plots. 
 The sandbox folder contains scratch work that was created during the development of this project. 
 
-The following report describes the work in this project: 
+The following report describes the work in this project: https://doi.org/10.1101/2020.12.18.423556
 
 
 Citations for this project can be found in dosage_control_references.pdf. The following reference was especially influential; 
